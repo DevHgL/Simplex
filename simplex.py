@@ -1,6 +1,5 @@
 import time
 
-
 def buscar_variavel_entrada():
     global variavel_entrada, linha_menor_elemento, coluna_pivo
     variavel_entrada = 1000
@@ -32,10 +31,11 @@ def buscar_linha_pivo():
     for i in range(total_linhas):
         if i == linha_menor_elemento:
             continue
-        coluna_variavel_entrada = tabela[i][total_colunas - 1] / tabela[i][coluna_pivo]
-        if coluna_variavel_entrada < menor_pivo and coluna_variavel_entrada > 0:
-            menor_pivo = coluna_variavel_entrada
-            linha_pivo = i
+        if tabela[i][coluna_pivo] != 0:
+            coluna_variavel_entrada = tabela[i][total_colunas - 1] / tabela[i][coluna_pivo]
+            if coluna_variavel_entrada < menor_pivo and coluna_variavel_entrada > 0:
+                menor_pivo = coluna_variavel_entrada
+                linha_pivo = i
     elemento_pivo = tabela[linha_pivo][coluna_pivo]
     output_file.write(f"Linha Pivo: {linha_pivo}\n")
     output_file.write(f"\nElemento Pivo: {elemento_pivo}\n")
@@ -62,13 +62,24 @@ if __name__ == "__main__":
     for i in range(qtd_funcoes_limitantes):
         restricao = input_file.readline().split()
         coeficientes = list(map(float, restricao[:-2]))
-        sinal = restricao[-2]
-        termo_independente = float(restricao[-1])
+        sinal = None  # Define a default value for 'sinal'
+        if len(restricao) >= 2:
+            sinal = restricao[-2]
+        else:
+            print(f"Unexpected line format: {restricao}")
+
+        if len(restricao) >= 1:
+            termo_independente = float(restricao[-1])
+        else:
+            print(f"Unexpected line format: {restricao}")
 
         # Se o termo independente é negativo, multiplicamos toda a linha por -1
         if termo_independente < 0:
             coeficientes = [-coef for coef in coeficientes]
-            termo_independente *= -1
+            if len(restricao) >= 1:
+                termo_independente = float(restricao[-1])
+            else:
+                print(f"Unexpected line format: {restricao}")
 
         # Adicionando as variáveis de folga e artificiais conforme necessário
         if sinal == "<=":
