@@ -62,24 +62,20 @@ if __name__ == "__main__":
     for i in range(qtd_funcoes_limitantes):
         restricao = input_file.readline().split()
         coeficientes = list(map(float, restricao[:-2]))
-        sinal = None  # Define a default value for 'sinal'
+        sinal = None  # Define um valor padrão para 'sinal'
+        termo_independente = None  # Define um valor padrão para 'termo_independente'
         if len(restricao) >= 2:
             sinal = restricao[-2]
         else:
-            print(f"Unexpected line format: {restricao}")
-
+            print(f"Formato de linha inesperado: {restricao}")
         if len(restricao) >= 1:
             termo_independente = float(restricao[-1])
+            # Se o termo independente é negativo, multiplicamos toda a linha por -1
+            if termo_independente < 0:
+                coeficientes = [-coef for coef in coeficientes]
+                termo_independente *= -1
         else:
-            print(f"Unexpected line format: {restricao}")
-
-        # Se o termo independente é negativo, multiplicamos toda a linha por -1
-        if termo_independente < 0:
-            coeficientes = [-coef for coef in coeficientes]
-            if len(restricao) >= 1:
-                termo_independente = float(restricao[-1])
-            else:
-                print(f"Unexpected line format: {restricao}")
+            print(f"Formato de linha inesperado: {restricao}")
 
         # Adicionando as variáveis de folga e artificiais conforme necessário
         if sinal == "<=":

@@ -1,0 +1,1 @@
+Informe os valores da tabela inicial formada linha a linha:
