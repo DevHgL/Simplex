@@ -1,22 +1,15 @@
-import time
-
 def buscar_variavel_entrada():
     global variavel_entrada, linha_menor_elemento, coluna_pivo
     variavel_entrada = 1000
     linha_menor_elemento = 0
     coluna_pivo = 0
 
-    output_file.write("\n\nProcurando Variável Que Entra:\n")
-    time.sleep(4)
-
-    for i in range(total_linhas):
+    for i_novo2 in range(total_linhas):
         for j in range(total_colunas):
-            if tabela[i][j] < variavel_entrada:
-                variavel_entrada = tabela[i][j]
-                linha_menor_elemento = i
+            if tabela[i_novo2][j] < variavel_entrada:
+                variavel_entrada = tabela[i_novo2][j]
+                linha_menor_elemento = i_novo2
                 coluna_pivo = j
-
-    output_file.write(f"Assim temos que a Variável que Entra é |{variavel_entrada}|\n")
 
 
 def buscar_linha_pivo():
@@ -25,33 +18,25 @@ def buscar_linha_pivo():
     linha_pivo = 0
     elemento_pivo = 0
 
-    output_file.write("\nObtendo Linha Pivo:\n\n")
-    time.sleep(5)
-
-    for i in range(total_linhas):
-        if i == linha_menor_elemento:
+    for i_novo in range(total_linhas):
+        if i_novo == linha_menor_elemento:
             continue
-        if tabela[i][coluna_pivo] != 0:
-            coluna_variavel_entrada = tabela[i][total_colunas - 1] / tabela[i][coluna_pivo]
-            if coluna_variavel_entrada < menor_pivo and coluna_variavel_entrada > 0:
+        if tabela[i_novo][coluna_pivo] != 0:
+            coluna_variavel_entrada = tabela[i_novo][total_colunas - 1] / tabela[i_novo][coluna_pivo]
+            if menor_pivo > coluna_variavel_entrada > 0:
                 menor_pivo = coluna_variavel_entrada
-                linha_pivo = i
+                linha_pivo = i_novo
     elemento_pivo = tabela[linha_pivo][coluna_pivo]
-    output_file.write(f"Linha Pivo: {linha_pivo}\n")
-    output_file.write(f"\nElemento Pivo: {elemento_pivo}\n")
 
 
 # Funções restantes...
 
 if __name__ == "__main__":
     input_file = open("problema1.txt", "r")
-    output_file = open("output.txt", "w")
 
     qtd_x, qtd_funcoes_limitantes, qtd_restricoes = map(int, input_file.readline().split())
     total_colunas = qtd_x + qtd_funcoes_limitantes + 2
     total_linhas = qtd_funcoes_limitantes + 1
-
-    output_file.write("Informe os valores da tabela inicial formada linha a linha:\n")
 
     tabela = []
 
@@ -84,6 +69,7 @@ if __name__ == "__main__":
             coeficientes.extend([0] * qtd_funcoes_limitantes)
         elif sinal == ">=":
             coeficientes.extend([-1] + [0] * (qtd_funcoes_limitantes - 1))
+            coeficientes.append(1)  # Adiciona uma variável artificial
 
         coeficientes.append(termo_independente)
 
@@ -91,6 +77,11 @@ if __name__ == "__main__":
 
     # Adicionando a função objetiva ao final da tabela
     funcao_objetiva.extend([0] * qtd_funcoes_limitantes)
+
+    # Se é um problema de maximização, multiplica a função objetivo por -1
+    if qtd_restricoes == 1:
+        funcao_objetiva = [-x for x in funcao_objetiva]
+
     funcao_objetiva.append(0)
 
     tabela.append(funcao_objetiva)
@@ -98,4 +89,3 @@ if __name__ == "__main__":
     # Restante do código...
 
     input_file.close()
-    output_file.close()
