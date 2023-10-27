@@ -1,27 +1,27 @@
 import numpy as np
 
-def cria_tableau(coeficientes_funcao_objetivo, coeficientes_restricoes, termos_independentes, otimizacao, operations):
-    num_restricoes = len(coeficientes_restricoes)
-    num_variaveis = len(coeficientes_funcao_objetivo)
+def create_tableau(objective_coefficients, constraint_coefficients, independent_terms, optimization_type, constraint_operations):
+    num_constraints = len(constraint_coefficients)
+    num_variables = len(objective_coefficients)
 
-    tableau = np.zeros((num_restricoes + 1, num_variaveis + num_restricoes + 1))
+    tableau = np.zeros((num_constraints + 1, num_variables + num_constraints + 1))
 
-    # Configurar a função objetivo na primeira linha do tableau
-    tableau[0, :num_variaveis] = coeficientes_funcao_objetivo
+    # Set up the objective function in the first row of the tableau
+    tableau[0, :num_variables] = objective_coefficients
 
-    for i in range(num_restricoes):
-        if termos_independentes[i] < 0:
+    for i in range(num_constraints):
+        if independent_terms[i] < 0:
             tableau[0] = -tableau[0]
-            termos_independentes = -termos_independentes
-            if operations[i] == "<=":
-                operations[i] = ">="
-            elif operations[i] == ">=":
-                operations[i] = "<="
+            independent_terms = -independent_terms
+            if constraint_operations[i] == "<=":
+                constraint_operations[i] = ">="
+            elif constraint_operations[i] == ">=":
+                constraint_operations[i] = "<="
 
-    # Configurar as restrições e os termos independentes
-    for i in range(num_restricoes):
-        tableau[i + 1, :num_variaveis] = coeficientes_restricoes[i]
-        tableau[i + 1, num_variaveis + i] = 1 if operations[i] == '<=' or operations[i] == '==' else -1  # Adicionando variáveis de folga
-        tableau[i + 1, -1] = termos_independentes[i]
+    # Set up constraints and independent terms
+    for i in range(num_constraints):
+        tableau[i + 1, :num_variables] = constraint_coefficients[i]
+        tableau[i + 1, num_variables + i] = 1 if constraint_operations[i] == '<=' or constraint_operations[i] == '==' else -1  # Adding slack or surplus variables
+        tableau[i + 1, -1] = independent_terms[i]
 
     return tableau

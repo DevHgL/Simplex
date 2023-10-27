@@ -1,51 +1,46 @@
 import numpy as np
 import sys
-from resolve import resolve
-from cria_tableau import cria_tableau
+from resolve import simplex_algorithm 
+from cria_tableau import create_tableau
 
-def arrayToFloat(array):
-    return list( map( lambda val: float(val), array ) )
+def convert_array_to_float(array):
+    return list(map(lambda val: float(val), array))
 
-def arrayToInt(array):
-    return list( map( lambda val: int(val), array ) )
+def convert_array_to_int(array):
+    return list(map(lambda val: int(val), array))
 
-if __name__ == '__main__':
+if __name__ == '__main':
     if len(sys.argv) >= 2:
-        path = sys.argv[1]
+        file_path = sys.argv[1]
     else:
-        path = str(input("Digite o path do arquivo do PPL: "))
+        file_path = str(input("Digite o caminho do arquivo: "))
 
+    with open(file_path, "r") as file:
+        file_content = file.read()
+    file_lines = file_content.split('\n')
 
-    with open(path, "r") as arq:
-        content = arq.read()
-    lines = content.split('\n')
+    num_constraints, num_variables, optimization_type = convert_array_to_int(file_lines[0].split(' '))
+    objective_function_coefficients = convert_array_to_float(file_lines[1].split(' '))
 
-    num_restricoes, num_variaveis, otimizacao = arrayToInt(lines[0].split(' '))
-    coeficientes_funcao_objetivo = arrayToFloat(lines[1].split(' '))
+    objective_function_coefficients = np.array(objective_function_coefficients)
 
-    # FO
-    coeficientes_funcao_objetivo = np.array(coeficientes_funcao_objetivo)
-
-    coeficientes_restricoes = []
+    constraint_coefficients = []
     operations = []
-    termos_independentes = []
+    independent_terms = []
 
-    # Capturando valores
-    for i in range(num_restricoes):
-        *coeficientes_restricao, operation, termo_independente = lines[2+i].split(' ')
-        
-        coeficientes_restricoes.append(arrayToFloat(coeficientes_restricao))
+    for i in range(num_constraints):
+        *coefficients, operation, independent_term = file_lines[2 + i].split(' ')
+
+        constraint_coefficients.append(convert_array_to_float(coefficients))
         operations.append(operation)
-        termos_independentes.append(float(termo_independente))
-    
-    # A
-    coeficientes_restricoes = np.array(coeficientes_restricoes)
+        independent_terms.append(float(independent_term))
+
+    constraint_coefficients = np.array(constraint_coefficients)
     operations = np.array(operations)
-    # b
-    termos_independentes = np.array(termos_independentes)
+    independent_terms = np.array(independent_terms)
 
-    tableau = cria_tableau(coeficientes_funcao_objetivo, coeficientes_restricoes, termos_independentes, otimizacao, operations)
-    solved = resolve(np.copy(tableau), otimizacao)
+    tableau = create_tableau(objective_function_coefficients, constraint_coefficients, independent_terms, optimization_type, operations)  # Chamei a função corretamente
+    solution = simplex_algorithm(np.copy(tableau), optimization_type)  # Chamei a função corretamente
 
-    print(solved)
+    print(solution)
     print(tableau)

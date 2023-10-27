@@ -1,51 +1,46 @@
 import numpy as np
 
-def resolve(tableau, otimizacao):
-    best_i = -1
-    exit_val_i = -1
+def simplex_algorithm(tableau, optimization_type):
+    entering_variable_index = -1
+    exiting_variable_index = -1
     while True:
-        fo = np.delete(tableau[0], np.where(tableau[0] == 0))
-        
-        # TODO Considere verificar se tem que fazer tratativa pra max e min ou se tem como só jogar todo problema de max pra mim ou vice versa
-        if otimizacao: best = np.amax(fo)
-        else: best = np.amin(fo)
+        objective_coefficients = np.delete(tableau[0], np.where(tableau[0] == 0))
 
-        
-        # Interrompendo se não houverem valores negativos na minimização
-        if not otimizacao and best > 0: break
-        # Interrompendo se não houverem valores positivos na maximização
-        if otimizacao and best < 0: break
+        if optimization_type:
+            best_coefficient = np.amax(objective_coefficients)
+        else:
+            best_coefficient = np.amin(objective_coefficients)
 
-        # Selecionando a Variável de Entrada
-        best_i = np.where(fo == best)[0][0]
+        if not optimization_type and best_coefficient > 0:
+            break
+        if optimization_type and best_coefficient < 0:
+            break
 
-        # Interrompendo se o valor de melhora for o mesmo que foi removido anteriormente
-        if best_i == exit_val_i: break
+        entering_variable_index = np.where(objective_coefficients == best_coefficient)[0][0]
 
-        #Selecionando a Coluna Pivô
-        pivot_column = tableau[:,best_i]
-        
-        b = tableau[:,-1]
-        b_results = b/pivot_column
-        b_results = np.delete(b_results, np.where(b_results <= 0))
+        if entering_variable_index == exiting_variable_index:
+            break
 
-        if len(b_results) == 0: break
+        pivot_column = tableau[:, entering_variable_index]
 
-        # Selecionando a Variável de Saída
-        exit_val = np.amin(b_results)
-        exit_val_i = np.where(b_results == exit_val)[0][0] + 1
-        
-        # Transformando em Identidade
-        # Dividindo a linha da variável de Entrada para
-        tableau[exit_val_i] = tableau[exit_val_i]/tableau[exit_val_i][best_i]
+        b_vector = tableau[:, -1]
+        b_divided_by_pivot_column = b_vector / pivot_column
+        b_divided_by_pivot_column = np.delete(b_divided_by_pivot_column, np.where(b_divided_by_pivot_column <= 0))
 
-        # Transformações lineares
-        for row_i in range(len(tableau)):
-            if (row_i != exit_val_i):
-                pivot = tableau[row_i][best_i]
-                row = -pivot * tableau[exit_val_i]
-                tableau[row_i] = tableau[row_i] + row
-        
+        if len(b_divided_by_pivot_column) == 0:
+            break
+
+        exiting_variable_coefficient = np.amin(b_divided_by_pivot_column)
+        exiting_variable_index = np.where(b_divided_by_pivot_column == exiting_variable_coefficient)[0][0] + 1
+
+        tableau[exiting_variable_index] = tableau[exiting_variable_index] / tableau[exiting_variable_index][entering_variable_index]
+
+        for row_index in range(len(tableau)):
+            if row_index != exiting_variable_index:
+                pivot_coefficient = tableau[row_index][entering_variable_index]
+                row_to_add = -pivot_coefficient * tableau[exiting_variable_index]
+                tableau[row_index] = tableau[row_index] + row_to_add
+
         tableau = np.around(tableau, 2)
 
-    return tableau[:,-1]
+    return tableau[:, -1]
