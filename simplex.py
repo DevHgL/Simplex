@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 from resolve import resolve
-from cria_tableau import criar_tableau
+from cria_tableau import cria_tableau
 
 def arrayToFloat(array):
     return list( map( lambda val: float(val), array ) )
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     # b
     termos_independentes = np.array(termos_independentes)
 
-    tableau = criar_tableau(coeficientes_funcao_objetivo, coeficientes_restricoes, termos_independentes, otimizacao, operations)
+    tableau = cria_tableau(coeficientes_funcao_objetivo, coeficientes_restricoes, termos_independentes, otimizacao, operations)
     solved = resolve(np.copy(tableau), otimizacao)
 
     print(solved)

@@ -1,6 +1,6 @@
 import numpy as np
 
-def criar_tableau(coeficientes_funcao_objetivo, coeficientes_restricoes, termos_independentes, otimizacao, operations):
+def cria_tableau(coeficientes_funcao_objetivo, coeficientes_restricoes, termos_independentes, otimizacao, operations):
     num_restricoes = len(coeficientes_restricoes)
     num_variaveis = len(coeficientes_funcao_objetivo)
 
